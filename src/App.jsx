@@ -19,9 +19,10 @@ function App() {
   const hasGuessed = selectedIndex !== null;
   const isCorrect = selectedIndex === targetIndex;
   const targetHex = useMemo(() => swatches[targetIndex], [swatches, targetIndex]);
+  const gameWon = score >= 20;
 
   function handleGuess(index) {
-    if (hasGuessed) return;
+    if (hasGuessed || gameWon) return;
     if (index === targetIndex) {
       setScore((currentScore) => currentScore + 1);
     }
@@ -29,6 +30,12 @@ function App() {
   }
 
   function playAgain() {
+    if (gameWon) {
+      setScore(0);
+      setRound(createRound());
+      setSelectedIndex(null);
+      return;
+    }
     setRound(createRound());
     setSelectedIndex(null);
   }
@@ -36,7 +43,8 @@ function App() {
     <main className="page">
       <h1>Color swatch guessing game</h1>
       <p className="prompt">Score: {score}</p>
-      <p className="prompt">Pick the swatch matching to win: {targetHex}</p>
+      {!gameWon && <p className="prompt">Pick the swatch matching to win the game: {targetHex}</p>}
+      {gameWon && <p className="prompt">🎉 You Win! 🎉</p>}
 
       <div className="swatches">
         {swatches.map((hex, index) => (
@@ -45,7 +53,7 @@ function App() {
             key={`${hex}-${index}`}
             onClick={() => handleGuess(index)}
             aria-label={`Choose color ${index + 1}`}
-            disabled={hasGuessed}
+            disabled={hasGuessed || gameWon}
           >
             <span className="swatch" style={{ backgroundColor: hex }} />
           </button>
@@ -59,7 +67,7 @@ function App() {
       )}
 
       <button className="play-again" onClick={playAgain}>
-        Play Again
+        {gameWon ? 'Play Again (Reset)' : 'Play Again'}
       </button>
     </main>
   );
