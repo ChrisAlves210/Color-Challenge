@@ -14,6 +14,7 @@ function createRound() {
 function App() {
   const [{ swatches, targetIndex }, setRound] = useState(createRound);
   const [selectedIndex, setSelectedIndex] = useState(null);
+  const [score, setScore] = useState(0);
 
   const hasGuessed = selectedIndex !== null;
   const isCorrect = selectedIndex === targetIndex;
@@ -21,6 +22,9 @@ function App() {
 
   function handleGuess(index) {
     if (hasGuessed) return;
+    if (index === targetIndex) {
+      setScore((currentScore) => currentScore + 1);
+    }
     setSelectedIndex(index);
   }
 
@@ -28,11 +32,11 @@ function App() {
     setRound(createRound());
     setSelectedIndex(null);
   }
-
   return (
     <main className="page">
-      <h1>Color Guessing Game</h1>
-      <p className="prompt">Pick the swatch matching: {targetHex}</p>
+      <h1>Color swatch guessing game</h1>
+      <p className="prompt">Score: {score}</p>
+      <p className="prompt">Pick the swatch matching to win: {targetHex}</p>
 
       <div className="swatches">
         {swatches.map((hex, index) => (
